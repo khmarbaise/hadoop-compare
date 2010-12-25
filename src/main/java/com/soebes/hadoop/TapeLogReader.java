@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 
 public class TapeLogReader {
 	private Counters context;
@@ -55,7 +56,12 @@ public class TapeLogReader {
 
 	public static void main(String [] args) {
 		TapeLogReader rlr = new TapeLogReader();
+		System.out.println("Started at: " + new Date().toString());
+		long start = System.currentTimeMillis();
 		rlr.read(new File(args[0]));
+		long ended = System.currentTimeMillis();
+		System.out.println("Stopped at: " + new Date().toString());
+		System.out.println("Runtime: " + ((ended-start)/1000.0) + " seconds");
         for (ContentType item : ContentType.values()) {
         	Counter counter = rlr.getContext().getCounter(item);
         	System.out.println("Counter: " + item.name() + " value:" + counter.getValue());
