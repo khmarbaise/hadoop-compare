@@ -7,31 +7,27 @@ import java.io.IOException;
 import java.util.Date;
 
 public class TapeLogReader {
-	private Counters context;
-	public TapeLogReader() {
-		setContext(new Counters());
-	}
-	public void process(String strLine) {
+    private Counters context;
+    public TapeLogReader() {
+        setContext(new Counters());
+    }
+    public void process(String strLine) {
         String[] columns = strLine.split("[ ]+");
         if (strLine.startsWith("tar: /dev/nst0")) {
-//			tar: /dev/nst0: Cannot open: Input/output error
-//			tar: Error is not recoverable: exiting now
             getContext().getCounter(ContentType.EMPTY).increment(1);
             return;
         }
 
         if (columns[2].startsWith("-")) {
-            //We only count files, but no directories or links etc.
             long sizeInBytes = Long.parseLong(columns[4]);
             getContext().getCounter(ContentType.BYTES).increment(sizeInBytes);
 
             getContext().getCounter(ContentType.FILES).increment(1);
         }
 
-//		if (columns[2].startsWith("d")) {
-//			context.getCounter(TapeLogFile.DIRECTORIES).increment(1);
-//			context.write(new Text("directory"), new Text("Test"));
-//		}
+        if (columns[2].startsWith("d")) {
+            context.getCounter(ContentType.DIRECTORIES).increment(1);
+        }
 
         if (columns[2].startsWith("l")) {
             getContext().getCounter(ContentType.LINKS).increment(1);
@@ -39,39 +35,39 @@ public class TapeLogReader {
         if (columns[2].startsWith("V")) {
             getContext().getCounter(ContentType.VOLUMNHEADER).increment(1);
         }
-        
-	}
 
-	public void read(File logFile) {
-		try {
-			BufferedReader in = new BufferedReader(new FileReader(logFile));
-			String str;
-			while ((str = in.readLine()) != null) {
-				process(str);
-			}
-			in.close();
-		} catch (IOException e) {
-		}
-	}
+    }
 
-	public static void main(String [] args) {
-		TapeLogReader rlr = new TapeLogReader();
-		System.out.println("Started at: " + new Date().toString());
-		long start = System.currentTimeMillis();
-		rlr.read(new File(args[0]));
-		long ended = System.currentTimeMillis();
-		System.out.println("Stopped at: " + new Date().toString());
-		System.out.println("Runtime: " + ((ended-start)/1000.0) + " seconds");
-        for (ContentType item : ContentType.values()) {
-        	Counter counter = rlr.getContext().getCounter(item);
-        	System.out.println("Counter: " + item.name() + " value:" + counter.getValue());
+    public void read(File logFile) {
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(logFile));
+            String str;
+            while ((str = in.readLine()) != null) {
+                process(str);
+            }
+            in.close();
+        } catch (IOException e) {
         }
-	}
+    }
 
-	public void setContext(Counters context) {
-		this.context = context;
-	}
-	public Counters getContext() {
-		return context;
-	}
+    public static void main(String [] args) {
+        TapeLogReader rlr = new TapeLogReader();
+        Date started = new Date();
+        System.out.println("Started at: " + started);
+        rlr.read(new File(args[0]));
+        Date ended = new Date();
+        System.out.println("Stopped at: " + ended);
+        System.out.println("Runtime: " + ((ended.getTime()-started.getTime())/1000.0) + " seconds");
+        for (ContentType item : ContentType.values()) {
+            Counter counter = rlr.getContext().getCounter(item);
+            System.out.println("Counter: " + item.name() + " value:" + counter.getValue());
+        }
+    }
+
+    public void setContext(Counters context) {
+        this.context = context;
+    }
+    public Counters getContext() {
+        return context;
+    }
 }
