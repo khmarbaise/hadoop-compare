@@ -8,9 +8,11 @@ import java.util.Date;
 
 public class TapeLogReader {
     private Counters context;
+
     public TapeLogReader() {
         setContext(new Counters());
     }
+
     public void process(String strLine) {
         String[] columns = strLine.split("[ ]+");
         if (strLine.startsWith("tar: /dev/nst0")) {
@@ -50,23 +52,28 @@ public class TapeLogReader {
         }
     }
 
-    public static void main(String [] args) {
+    public static void main(String[] args) {
         TapeLogReader rlr = new TapeLogReader();
         Date started = new Date();
         System.out.println("Started at: " + started);
         rlr.read(new File(args[0]));
         Date ended = new Date();
         System.out.println("Stopped at: " + ended);
-        System.out.println("Runtime: " + ((ended.getTime()-started.getTime())/1000.0) + " seconds");
+        System.out
+                .println("Runtime: "
+                        + ((ended.getTime() - started.getTime()) / 1000.0)
+                        + " seconds");
         for (ContentType item : ContentType.values()) {
             Counter counter = rlr.getContext().getCounter(item);
-            System.out.println("Counter: " + item.name() + " value:" + counter.getValue());
+            System.out.println("Counter: " + item.name() + " value:"
+                    + counter.getValue());
         }
     }
 
     public void setContext(Counters context) {
         this.context = context;
     }
+
     public Counters getContext() {
         return context;
     }

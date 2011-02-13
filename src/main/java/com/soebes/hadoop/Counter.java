@@ -2,22 +2,22 @@ package com.soebes.hadoop;
 
 public class Counter {
 
-	private Long value;
+    private Long value;
 
-	public Counter() {
-		setValue(0L);
-	}
+    public Counter() {
+        setValue(0L);
+    }
 
-	public void increment(long count) {
-		setValue(getValue() + count);
-	}
+    public void increment(long count) {
+        setValue(getValue() + count);
+    }
 
-	public Long getValue() {
-		return value;
-	}
-	public void setValue(Long value) {
-		this.value = value;
-	}
-	
-	
+    public Long getValue() {
+        return value;
+    }
+
+    public void setValue(Long value) {
+        this.value = value;
+    }
+
 }
