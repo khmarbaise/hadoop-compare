@@ -41,14 +41,21 @@ public class TapeLogReader {
     }
 
     public void read(File logFile) {
+        BufferedReader in = null;
         try {
-            BufferedReader in = new BufferedReader(new FileReader(logFile));
+            in = new BufferedReader(new FileReader(logFile));
             String str;
             while ((str = in.readLine()) != null) {
                 process(str);
             }
-            in.close();
         } catch (IOException e) {
+            System.err.println("Failure during read:" + e.getMessage());
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+                System.err.println("Failure during close:" + e.getMessage());
+            }
         }
     }
 
