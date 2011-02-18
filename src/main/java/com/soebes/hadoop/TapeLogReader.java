@@ -66,10 +66,10 @@ public class TapeLogReader {
         rlr.read(new File(args[0]));
         Date ended = new Date();
         System.out.println("Stopped at: " + ended);
-        System.out
-                .println("Runtime: "
-                        + ((ended.getTime() - started.getTime()) / 1000.0)
-                        + " seconds");
+        System.out.println("Runtime: "
+            + ((ended.getTime() - started.getTime()) / 1000.0)
+            + " seconds");
+
         for (ContentType item : ContentType.values()) {
             Counter counter = rlr.getContext().getCounter(item);
             System.out.println("Counter: " + item.name() + " value:"
